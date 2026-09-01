@@ -1,0 +1,483 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกอารมณ์ - MoodFlow</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .player-container {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .album-art {
+            width: 200px;
+            height: 200px;
+            border-radius: 15px;
+            object-fit: cover;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        .album-art.playing {
+            animation: pulse-art 2s infinite;
+        }
+        @keyframes pulse-art {
+            0% { transform: scale(1); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 15px 30px rgba(211,47,47,0.4); }
+            100% { transform: scale(1); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        }
+        .song-info h3 {
+            font-size: 1.5rem;
+            color: var(--primary-bg-light);
+            margin-bottom: 0.2rem;
+        }
+        .song-info p {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 1.5rem;
+        }
+        .player-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .play-pause-btn {
+            width: 55px;
+            height: 55px;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .play-pause-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary-bg-light);
+        }
+        .youtube-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #FF0000;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .youtube-link-btn:hover {
+            background: #CC0000;
+        }
+        .activity-card {
+            background: var(--burgundy);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 1.5rem;
+            border-left: 5px solid var(--accent-red);
+            text-align: left;
+        }
+        .activity-card h4 {
+            color: var(--text-white);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .activity-card p {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.95rem;
+        }
+        .loading-state {
+            display: none;
+            padding: 3rem;
+            text-align: center;
+            color: var(--text-white);
+        }
+        .text-mood-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .mood-textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 1rem 1.2rem;
+            color: white;
+            font-family: 'Kanit', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .mood-textarea:focus {
+            border-color: var(--accent-red);
+            background: rgba(255,255,255,0.1);
+        }
+        .mood-textarea::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+        .btn-random {
+            background-color: var(--text-white);
+            color: var(--dark-charcoal);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-random:hover {
+            transform: translateY(-2px);
+            background-color: var(--primary-bg-light);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <div class="logo-icon"><i class="fa-solid fa-wave-square"></i></div>
+            MoodFlow
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">หน้าแรก</a></li>
+            <li><a href="mood.html" class="active">บันทึกอารมณ์</a></li>
+            <li><a href="library.html">คลังเพลง</a></li>
+            <li><a href="about.html">เกี่ยวกับเรา</a></li>
+        </ul>
+        <a href="login.html" class="btn-primary">เข้าสู่ระบบ</a>
+    </nav>
+
+    <div class="container animate-up">
+        <div class="page-header">
+            <h1>ตอนนี้คุณรู้สึกอย่างไร?</h1>
+            <p>เลือกอารมณ์ หรือพิมพ์ระบายความรู้สึกของคุณ เพื่อให้เราสุ่มเพลงที่ใช่ที่สุด</p>
+        </div>
+
+        <div class="mood-container">
+            <div class="emotion-grid">
+                <div class="emotion-btn" onclick="selectEmotion(this, 'มีความสุข')">
+                    <i class="fa-regular fa-face-smile-beam"></i>
+                    <span>มีความสุข</span>
+                </div>
+                <div class="emotion-btn" onclick="selectEmotion(this, 'ผ่อนคลาย')">
+                    <i class="fa-solid fa-spa"></i>
+                    <span>ผ่อนคลาย</span>
+                </div>
+                <div class="emotion-btn" onclick="selectEmotion(this, 'เศร้า')">
+                    <i class="fa-regular fa-face-sad-tear"></i>
+                    <span>เศร้า</span>
+                </div>
+                <div class="emotion-btn" onclick="selectEmotion(this, 'เครียด')">
+                    <i class="fa-solid fa-face-dizzy"></i>
+                    <span>เครียด</span>
+                </div>
+                <div class="emotion-btn" onclick="selectEmotion(this, 'มีพลัง')">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>มีพลัง</span>
+                </div>
+            </div>
+
+            <div class="text-mood-section">
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 10px; text-align: left; font-size: 0.95rem;">หรืออธิบายความรู้สึกของคุณให้เราฟัง (เช่น อกหัก, เหงา, แอบชอบ, เหนื่อยมาก)...</p>
+                <textarea id="moodText" class="mood-textarea" placeholder="พิมพ์ความรู้สึกของคุณที่นี่... (กด Enter เพื่อส่ง)" onkeypress="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); analyzeTextMood(); }"></textarea>
+                <div style="display: flex; justify-content: flex-end; width: 100%;">
+                    <button class="btn-random" style="background-color: var(--accent-red); color: white;" onclick="analyzeTextMood()">
+                        <i class="fa-solid fa-paper-plane"></i> ส่งความรู้สึก
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingIndicator" class="loading-state">
+                <i class="fa-solid fa-circle-notch fa-spin fa-3x" style="color: var(--accent-red); margin-bottom: 1rem;"></i>
+                <p>กำลังวิเคราะห์ความรู้สึกและสุ่มเพลง...</p>
+            </div>
+
+            <!-- Result Card -->
+            <div class="result-card" id="resultCard">
+                <h3 style="margin-bottom: 1rem; color: var(--text-white);">ผลลัพธ์ของคุณ</h3>
+                
+                <div class="player-container" id="playerContainer">
+                    <img id="playerArt" src="" alt="Album Art" class="album-art">
+                    <div class="song-info">
+                        <h3 id="playerTitle">ชื่อเพลง</h3>
+                        <p id="playerArtist">ชื่อศิลปิน</p>
+                    </div>
+                    
+                    <div class="player-controls">
+                        <button class="play-pause-btn" id="playPauseBtn" onclick="toggleAudio()">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                    </div>
+                    
+                    <a id="youtubeBtn" href="#" target="_blank" class="youtube-link-btn">
+                        <i class="fa-brands fa-youtube"></i> ฟังเต็มเพลงบน YouTube
+                    </a>
+                </div>
+
+                <div class="activity-card" id="activityCard" style="display: none;">
+                    <h4><i class="fa-solid fa-person-running" style="color: var(--accent-red);"></i> กิจกรรมแนะนำ</h4>
+                    <p id="activityResult">กำลังค้นหากิจกรรม...</p>
+                </div>
+            </div>
+            
+            <audio id="realAudioPlayer" src=""></audio>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-bottom" style="padding-top: 1rem; border:none;">
+            <div>&copy; 2026 MoodFlow. All Rights Reserved.</div>
+        </div>
+    </footer>
+
+    <script>
+        const audioEl = document.getElementById('realAudioPlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const artEl = document.getElementById('playerArt');
+
+        // Database of songs and activities for each emotion (Hits from 90s to Present)
+        const moodData = {
+            'มีความสุข': {
+                songs: ["ผ้าเช็ดหน้า Triumphs Kingdom", "รบกวนมารักกัน ทาทา ยัง", "แค่บอกว่ารักเธอ หมีพูห์", "หมวยนี่คะ China Dolls", "L.O.V.E. คูณสามซูเปอร์แก๊ง", "โต๊ะริม นนท์ ธนนท์", "ตกหลุมรักรอบที่ล้าน Kinkaworn", "วัดปะหล่ะ 4EVE", "เพื่อนเล่น ไม่เล่นเพื่อน Tilly Birds", "ฉลามชอบงับคุณ BONNADOL"],
+                activity: 'ออกไปเดินเล่นที่สวนสาธารณะ หาของอร่อยๆ ทาน หรือถ่ายรูปเล่นกับเพื่อน เพื่อฉลองความรู้สึกดีๆ ในวันนี้'
+            },
+            'ผ่อนคลาย': {
+                songs: ["ฤดูที่แตกต่าง บอย โกสิยพงษ์", "ดาว Pause", "ลมหายใจ บอย โกสิยพงษ์", "ข้อความ Pause", "ก้อนหินละเมอ Soul After Six", "วาดไว้ BOWKYLION", "ถ้าเธอรักฉันจริง Three Man Down", "แค่มีเธอก็พอ Groove Riders", "วันหนึ่งฉันเดินเข้าป่า Max Jenmana", "สลักจิต ป๊อบ ปองกูล"],
+                activity: 'จิบกาแฟอุ่นๆ พร้อมอ่านหนังสือเล่มโปรดในมุมส่วนตัว ปล่อยให้เวลาเดินช้าลงและฟื้นฟูจิตใจ'
+            },
+            'เศร้า': {
+                songs: ["ช่างไม่รู้เลย บอย พีซเมกเกอร์", "แทงข้างหลังทะลุถึงหัวใจ อ๊อฟ ปองศักดิ์", "คำถามที่ต้องตอบ อ๊อฟ ปองศักดิ์", "รักแท้ดูแลไม่ได้ Potato", "คนของเธอ แมว จิรศักดิ์", "คิดแต่ไม่ถึง Tilly Birds", "ถ้าเราเจอกันอีก Tilly Birds", "ภาพจำ ป๊อบ ปองกูล", "ซ่อนกลิ่น Palmy", "ทิ้งไว้กลางทาง Potato"],
+                activity: 'หาพื้นที่เงียบๆ เขียนบันทึกความรู้สึก (Journaling) ปล่อยให้ตัวเองได้ร้องไห้และให้เวลากับตัวเองเต็มที่'
+            },
+            'เครียด': {
+                songs: ["จิ๊จ๊ะ Silly Fools", "น้ำลาย Silly Fools", "เล่นของสูง Big Ass", "ฤดูที่ฉันเหงา Flure", "ปล่อย ป๊อบ ปองกูล", "ช่างมัน COCKTAIL", "ยิ้มเข้าไว้ Clash", "คนเจียมตัว So Cool", "จันทร์เจ้า Slot Machine", "ทนได้ทนไป Auttapon"],
+                activity: 'หยุดพักจากสิ่งที่ทำอยู่ ผ่อนคลายสมองไปกับแอปเกมระบายสี หรือฝึกสมาธิกำหนดลมหายใจ 15 นาที'
+            },
+            'มีพลัง': {
+                songs: ["ซมซาน เสก โลโซ", "ใจสั่งมา เสก โลโซ", "แสงสุดท้าย Bodyslam", "ยาพิษ Bodyslam", "ความเชื่อ Bodyslam", "คุกเข่า COCKTAIL", "วัดใจ Silly Fools", "ทรงอย่างแบด Paper Planes", "ธาตุทองซาวด์ YOUNGOHM", "แดงกับเขียว TaitosmitH"],
+                activity: 'ใส่รองเท้าผ้าใบแล้วไปออกกำลังกาย หรือเริ่มต้นลงมือทำโปรเจกต์ใหม่ที่คุณวางแผนไว้มานาน!'
+            }
+        };
+
+        function selectEmotion(element, emotion) {
+            // Remove selected class from all
+            const buttons = document.querySelectorAll('.emotion-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            
+            // Add to clicked
+            element.classList.add('selected');
+            
+            // Clear textarea
+            document.getElementById('moodText').value = "";
+            
+            // Trigger randomizer immediately
+            generateResult(emotion);
+        }
+
+        async function analyzeTextMood() {
+            const text = document.getElementById('moodText').value.toLowerCase().trim();
+            if(text === "") {
+                alert("กรุณาพิมพ์อธิบายความรู้สึกของคุณก่อนนะครับ!");
+                return;
+            }
+            
+            // Simple keyword matching for AI simulation
+            let detectedMood = 'ผ่อนคลาย'; // default
+            
+            const sadWords = ['อกหัก', 'เลิก', 'ทิ้ง', 'ร้องไห้', 'เจ็บ', 'เศร้า', 'เหงา', 'เสียใจ', 'เดียวดาย', 'คิดถึง', 'แอบรัก'];
+            const happyWords = ['แอบชอบ', 'รัก', 'แฟน', 'ดีใจ', 'ยิ้ม', 'มีความสุข', 'สนุก', 'สมหวัง', 'จีบ'];
+            const stressWords = ['เหนื่อย', 'เครียด', 'ท้อ', 'งานเยอะ', 'สอบ', 'ปวดหัว', 'เบื่อ', 'เซ็ง'];
+            const energyWords = ['สู้', 'ตื่นเต้น', 'พลัง', 'ออกกำลัง', 'อยากทำ', 'ลุย', 'พร้อม'];
+            const relaxWords = ['ชิล', 'พักผ่อน', 'นอน', 'ง่วง', 'สบาย', 'ว่าง', 'เปื่อย'];
+            
+            if (sadWords.some(word => text.includes(word))) detectedMood = 'เศร้า';
+            else if (happyWords.some(word => text.includes(word))) detectedMood = 'มีความสุข';
+            else if (stressWords.some(word => text.includes(word))) detectedMood = 'เครียด';
+            else if (energyWords.some(word => text.includes(word))) detectedMood = 'มีพลัง';
+            else if (relaxWords.some(word => text.includes(word))) detectedMood = 'ผ่อนคลาย';
+            
+            // Highlight the corresponding button to show what the "AI" detected
+            const buttons = document.querySelectorAll('.emotion-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('selected');
+                if(btn.innerText.includes(detectedMood)) {
+                    btn.classList.add('selected');
+                }
+            });
+            
+            // Hide previous results
+            document.getElementById('resultCard').classList.remove('active');
+            document.getElementById('playerContainer').style.display = 'none';
+            document.getElementById('activityCard').style.display = 'none';
+            pauseAudio();
+
+            // Show loading
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            loadingIndicator.style.display = 'block';
+
+            try {
+                // Use the actual text typed by user to search for a pool of songs
+                // By grabbing up to 15 songs matching the keyword, we can pick one at random!
+                const searchUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(text)}&limit=15&entity=song&country=TH`;
+                const response = await fetch(searchUrl);
+                const data = await response.json();
+                
+                loadingIndicator.style.display = 'none';
+                document.getElementById('resultCard').classList.add('active');
+                
+                if (data.results && data.results.length > 0) {
+                    // Randomly select one song from the search results
+                    const randomSong = data.results[Math.floor(Math.random() * data.results.length)];
+                    showPlayer(
+                        randomSong.trackName, 
+                        randomSong.artistName, 
+                        randomSong.artworkUrl100.replace('100x100bb', '600x600bb'),
+                        randomSong.previewUrl,
+                        randomSong.trackName + " " + randomSong.artistName
+                    );
+
+                    // Show corresponding activity
+                    document.getElementById('activityResult').textContent = moodData[detectedMood].activity;
+                    document.getElementById('activityCard').style.display = 'block';
+                } else {
+                    // Fallback to basic emotion randomizer if text query is too weird to yield songs
+                    generateResult(detectedMood, true);
+                }
+
+            } catch (error) {
+                console.error(error);
+                loadingIndicator.style.display = 'none';
+                generateResult(detectedMood, true);
+            }
+        }
+
+        async function generateResult(emotion, skipLoading = false) {
+            if (!skipLoading) {
+                document.getElementById('resultCard').classList.remove('active');
+                document.getElementById('playerContainer').style.display = 'none';
+                document.getElementById('activityCard').style.display = 'none';
+                pauseAudio();
+                const loadingIndicator = document.getElementById('loadingIndicator');
+                loadingIndicator.style.display = 'block';
+            }
+
+            // Pick a random song for this mood
+            const songsArray = moodData[emotion].songs;
+            const randomSong = songsArray[Math.floor(Math.random() * songsArray.length)];
+            const activityText = moodData[emotion].activity;
+
+            try {
+                // Fetch song from iTunes API
+                const url = `https://itunes.apple.com/search?term=${encodeURIComponent(randomSong)}&limit=1&entity=song&country=TH`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                loadingIndicator.style.display = 'none';
+                document.getElementById('resultCard').classList.add('active');
+                
+                if (data.results && data.results.length > 0) {
+                    const song = data.results[0];
+                    showPlayer(
+                        song.trackName, 
+                        song.artistName, 
+                        song.artworkUrl100.replace('100x100bb', '600x600bb'),
+                        song.previewUrl,
+                        randomSong
+                    );
+                } else {
+                    // Fallback if API fails to find the specific song
+                    showPlayer(
+                        randomSong.split(' ')[0], 
+                        randomSong.split(' ').slice(1).join(' '), 
+                        "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&w=600&q=80", 
+                        "",
+                        randomSong
+                    );
+                }
+
+                // Show Activity
+                document.getElementById('activityResult').textContent = activityText;
+                document.getElementById('activityCard').style.display = 'block';
+
+            } catch (error) {
+                console.error(error);
+                loadingIndicator.style.display = 'none';
+                alert('เกิดข้อผิดพลาดในการดึงข้อมูลเพลง');
+            }
+        }
+
+        function showPlayer(title, artist, coverUrl, audioUrl, originalQuery) {
+            document.getElementById('playerTitle').textContent = title;
+            document.getElementById('playerArtist').textContent = artist;
+            artEl.src = coverUrl;
+            
+            if(audioUrl) {
+                audioEl.src = audioUrl;
+                playPauseBtn.style.display = 'flex';
+                // Auto play
+                playAudio();
+            } else {
+                playPauseBtn.style.display = 'none';
+            }
+            
+            // Set YouTube link
+            document.getElementById('youtubeBtn').href = `https://www.youtube.com/results?search_query=${encodeURIComponent(originalQuery)}`;
+            
+            document.getElementById('playerContainer').style.display = 'block';
+            document.getElementById('playerContainer').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function toggleAudio() {
+            if (audioEl.paused) {
+                playAudio();
+            } else {
+                pauseAudio();
+            }
+        }
+
+        function playAudio() {
+            audioEl.play().then(() => {
+                playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                artEl.classList.add('playing');
+            }).catch(err => console.log('Autoplay prevented:', err));
+        }
+
+        function pauseAudio() {
+            audioEl.pause();
+            playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            artEl.classList.remove('playing');
+        }
+
+        // Handle end of song
+        audioEl.addEventListener('ended', () => {
+            pauseAudio();
+        });
+    </script>
+<script src="auth.js"></script>
+</body>
+</html>
+
+

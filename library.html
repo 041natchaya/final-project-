@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คลังเพลง - MoodFlow</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .search-container {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 1rem 110px 1rem 3rem;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-family: 'Kanit', sans-serif;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            outline: none;
+            transition: all 0.3s ease;
+            background: var(--text-white);
+            box-sizing: border-box;
+        }
+        .search-input:focus {
+            box-shadow: 0 10px 30px rgba(211,47,47,0.15);
+        }
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Kanit', sans-serif;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        .search-btn:hover {
+            background: var(--burgundy);
+        }
+        
+        /* Modern Music Player UI */
+        #playerContainer {
+            display: none;
+            max-width: 600px;
+            margin: 0 auto 4rem;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 2.5rem;
+            text-align: center;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .album-art {
+            width: 250px;
+            height: 250px;
+            border-radius: 20px;
+            object-fit: cover;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        .album-art.playing {
+            animation: pulse-art 2s infinite;
+        }
+        @keyframes pulse-art {
+            0% { transform: scale(1); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+            50% { transform: scale(1.03); box-shadow: 0 20px 40px rgba(211,47,47,0.3); }
+            100% { transform: scale(1); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+        }
+        .song-info h3 {
+            font-size: 1.8rem;
+            color: var(--dark-charcoal);
+            margin-bottom: 0.2rem;
+        }
+        .song-info p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        .player-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .control-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark-charcoal);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .control-btn:hover {
+            color: var(--accent-red);
+        }
+        .play-pause-btn {
+            width: 65px;
+            height: 65px;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(211,47,47,0.3);
+        }
+        .play-pause-btn:hover {
+            transform: scale(1.1);
+            background: var(--burgundy);
+        }
+        .youtube-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #FF0000;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .youtube-link-btn:hover {
+            background: #CC0000;
+            transform: translateY(-2px);
+        }
+        .loading-state {
+            color: var(--dark-charcoal);
+            font-size: 1.2rem;
+            padding: 3rem;
+            display: none;
+        }
+        .recommended-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--dark-charcoal);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <div class="logo-icon"><i class="fa-solid fa-wave-square"></i></div>
+            MoodFlow
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">หน้าแรก</a></li>
+            <li><a href="mood.html">บันทึกอารมณ์</a></li>
+            <li><a href="library.html" class="active">คลังเพลง</a></li>
+            <li><a href="about.html">เกี่ยวกับเรา</a></li>
+        </ul>
+        <a href="login.html" class="btn-primary">เข้าสู่ระบบ</a>
+    </nav>
+
+    <div class="container animate-up">
+        <div class="page-header">
+            <h1>ค้นหาเพลงที่ใช่</h1>
+            <p>พิมพ์ชื่อเพลง หรือชื่อศิลปินที่คุณต้องการฟังได้เลย!</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-wrapper">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="พิมพ์ชื่อเพลง หรือ ศิลปิน เช่น 'ซมซาน'..." onkeypress="handleSearch(event)">
+                <button class="search-btn" onclick="executeSearch()">ค้นหา</button>
+            </div>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading-state" style="text-align: center;">
+            <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: var(--accent-red); margin-bottom: 1rem;"></i>
+            <p>กำลังค้นหาเพลง...</p>
+        </div>
+
+        <!-- Dynamic Audio Player -->
+        <div id="playerContainer">
+            <img id="playerArt" src="" alt="Album Art" class="album-art">
+            <div class="song-info">
+                <h3 id="playerTitle">ชื่อเพลง</h3>
+                <p id="playerArtist">ชื่อศิลปิน</p>
+            </div>
+            
+            <div class="player-controls">
+                <button class="control-btn" onclick="seekAudio(-5)"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="play-pause-btn" id="playPauseBtn" onclick="toggleAudio()">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+                <button class="control-btn" onclick="seekAudio(5)"><i class="fa-solid fa-forward-step"></i></button>
+            </div>
+            
+            <p style="color: #999; font-size: 0.85rem; margin-bottom: 1.5rem;">* เล่นเสียงตัวอย่างลิขสิทธิ์แท้ (30 วินาที)</p>
+            
+            <a id="youtubeBtn" href="#" target="_blank" class="youtube-link-btn">
+                <i class="fa-brands fa-youtube"></i> ฟังเต็มเพลงบน YouTube
+            </a>
+            
+            <!-- Hidden Audio Element -->
+            <audio id="realAudioPlayer" src=""></audio>
+        </div>
+
+        <h3 class="recommended-header">หรือเลือกฟังเพลงเดี่ยวตามอารมณ์</h3>
+        
+        <div class="library-grid" id="playlistGrid">
+            <!-- Card 1 -->
+            <div class="playlist-card">
+                <div class="playlist-image">
+                    <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Happy Vibes" style="width:100%; height:100%; object-fit:cover;">
+                    <span class="playlist-badge">มีความสุข</span>
+                </div>
+                <div class="playlist-info">
+                    <h3>โต๊ะริม (Melt)</h3>
+                    <p>นนท์ ธนนท์</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn-primary" style="width: 100%;" onclick="fetchSongData('โต๊ะริม นนท์ ธนนท์')"><i class="fa-solid fa-play"></i> ฟังเพลงนี้</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="playlist-card">
+                <div class="playlist-image">
+                    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Relaxing" style="width:100%; height:100%; object-fit:cover;">
+                    <span class="playlist-badge" style="background:#4A90E2;">ผ่อนคลาย</span>
+                </div>
+                <div class="playlist-info">
+                    <h3>วาดไว้ (recall)</h3>
+                    <p>BOWKYLION</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn-primary" style="width: 100%;" onclick="fetchSongData('วาดไว้ BOWKYLION')"><i class="fa-solid fa-play"></i> ฟังเพลงนี้</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="playlist-card">
+                <div class="playlist-image">
+                    <img src="https://images.unsplash.com/photo-1516280440502-a7f766e48220?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Sad" style="width:100%; height:100%; object-fit:cover;">
+                    <span class="playlist-badge" style="background:#9B59B6;">เศร้า</span>
+                </div>
+                <div class="playlist-info">
+                    <h3>คิด(แต่ไม่)ถึง</h3>
+                    <p>Tilly Birds</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn-primary" style="width: 100%;" onclick="fetchSongData('คิดแต่ไม่ถึง Tilly Birds')"><i class="fa-solid fa-play"></i> ฟังเพลงนี้</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="playlist-card">
+                <div class="playlist-image">
+                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Energetic" style="width:100%; height:100%; object-fit:cover;">
+                    <span class="playlist-badge" style="background:#F39C12;">มีพลัง</span>
+                </div>
+                <div class="playlist-info">
+                    <h3>ซมซาน</h3>
+                    <p>เสก โลโซ (Sek Loso)</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn-primary" style="width: 100%;" onclick="fetchSongData('ซมซาน เสก โลโซ')"><i class="fa-solid fa-play"></i> ฟังเพลงนี้</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 5 -->
+            <div class="playlist-card">
+                <div class="playlist-image">
+                    <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Stress Relief" style="width:100%; height:100%; object-fit:cover;">
+                    <span class="playlist-badge" style="background:#2ECC71;">เครียด</span>
+                </div>
+                <div class="playlist-info">
+                    <h3>ฤดูที่ฉันเหงา</h3>
+                    <p>Flure</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn-primary" style="width: 100%;" onclick="fetchSongData('ฤดูที่ฉันเหงา Flure')"><i class="fa-solid fa-play"></i> ฟังเพลงนี้</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-bottom" style="padding-top: 1rem; border:none;">
+            <div>&copy; 2026 MoodFlow. All Rights Reserved.</div>
+        </div>
+    </footer>
+
+    <script>
+        const audioEl = document.getElementById('realAudioPlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const artEl = document.getElementById('playerArt');
+
+        function handleSearch(event) {
+            if (event.key === "Enter") {
+                executeSearch();
+            }
+        }
+        
+        function executeSearch() {
+            let input = document.getElementById('searchInput').value.trim();
+            if (input !== "") {
+                fetchSongData(input);
+            }
+        }
+
+        async function fetchSongData(query) {
+            // Hide player and show loading
+            document.getElementById('playerContainer').style.display = 'none';
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            loadingIndicator.style.display = 'block';
+            
+            // Stop current audio
+            audioEl.pause();
+            
+            try {
+                // Use iTunes API (Free, no auth, works for Thai songs)
+                const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=1&entity=song&country=TH`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                loadingIndicator.style.display = 'none';
+                
+                if (data.results && data.results.length > 0) {
+                    const song = data.results[0];
+                    showPlayer(
+                        song.trackName, 
+                        song.artistName, 
+                        song.artworkUrl100.replace('100x100bb', '600x600bb'), // Get high-res cover art
+                        song.previewUrl,
+                        query
+                    );
+                } else {
+                    alert(`ขออภัยครับ ไม่พบเพลง "${query}" ในระบบค้นหา ลองค้นหาด้วยชื่อศิลปินเพิ่มเติมนะครับ`);
+                }
+            } catch (error) {
+                console.error(error);
+                loadingIndicator.style.display = 'none';
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง');
+            }
+        }
+
+        function showPlayer(title, artist, coverUrl, audioUrl, originalQuery) {
+            document.getElementById('playerTitle').textContent = title;
+            document.getElementById('playerArtist').textContent = artist;
+            artEl.src = coverUrl;
+            
+            audioEl.src = audioUrl;
+            
+            // Set YouTube link
+            document.getElementById('youtubeBtn').href = `https://www.youtube.com/results?search_query=${encodeURIComponent(originalQuery)}`;
+            
+            const playerContainer = document.getElementById('playerContainer');
+            playerContainer.style.display = 'block';
+            playerContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Auto play
+            playAudio();
+        }
+
+        function toggleAudio() {
+            if (audioEl.paused) {
+                playAudio();
+            } else {
+                pauseAudio();
+            }
+        }
+
+        function playAudio() {
+            audioEl.play().then(() => {
+                playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                artEl.classList.add('playing');
+            }).catch(err => console.log('Autoplay prevented:', err));
+        }
+
+        function pauseAudio() {
+            audioEl.pause();
+            playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            artEl.classList.remove('playing');
+        }
+
+        function seekAudio(seconds) {
+            audioEl.currentTime += seconds;
+        }
+
+        // Handle end of song
+        audioEl.addEventListener('ended', () => {
+            pauseAudio();
+        });
+    </script>
+<script src="auth.js"></script>
+</body>
+</html>
+
+

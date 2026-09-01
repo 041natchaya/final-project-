@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodFlow - เพลงที่ใช่ ในแบบที่คุณรู้สึก</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <div class="logo-icon"><i class="fa-solid fa-wave-square"></i></div>
+            MoodFlow
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">หน้าแรก</a></li>
+            <li><a href="mood.html">บันทึกอารมณ์</a></li>
+            <li><a href="library.html">คลังเพลง</a></li>
+            <li><a href="about.html">เกี่ยวกับเรา</a></li>
+        </ul>
+        <a href="login.html" class="btn-primary">เข้าสู่ระบบ</a>
+    </nav>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero animate-up">
+            <div class="hero-bg-glow"></div>
+            <div class="hero-content">
+                <h1>MoodFlow</h1>
+                <h2>เพลงที่ใช่ ในแบบที่คุณรู้สึก</h2>
+                <p class="hero-highlight">สุ่มลิสต์เพลงและกิจกรรมที่ตรงกับอารมณ์ของคุณมากที่สุด ให้ทุกวันเป็นวันพิเศษ</p>
+                <div style="display: flex; gap: 15px; margin-top: 2rem;">
+                    <a href="mood.html" class="btn-white">เริ่มต้นใช้งาน <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <!-- Placeholder for Hero Image (Woman with glowing headphones) -->
+                <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Woman listening to music" style="width: 400px; height: 400px; object-fit: cover;">
+            </div>
+        </section>
+
+        <!-- 3 ขั้นตอนง่ายๆ Section -->
+        <section class="steps-section animate-up" style="animation-delay: 0.2s;">
+            <div style="text-align: center;">
+                <span class="section-badge">3 ขั้นตอนง่ายๆ</span>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-icon"><i class="fa-regular fa-face-smile"></i></div>
+                    <h3>เลือกอารมณ์</h3>
+                    <p>บอกเราว่าตอนนี้คุณรู้สึกอย่างไร หรือให้ AI สแกนใบหน้าเพื่อประเมินความรู้สึกเบื้องต้น</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon"><i class="fa-solid fa-shuffle"></i></div>
+                    <h3>สุ่มสิ่งที่คุณต้องการ</h3>
+                    <p>ระบบจะสุ่ม Playlist เพลงที่เข้ากับ Vibe และกิจกรรมที่ควรทำในช่วงเวลานั้นๆ</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon"><i class="fa-regular fa-paper-plane"></i></div>
+                    <h3>เริ่มลงมือทำ</h3>
+                    <p>ดื่มด่ำไปกับเสียงเพลงและลงมือทำกิจกรรมแนะนำ เพื่อให้วันของคุณดีขึ้นทันที</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- กิจกรรมตาม Mood Section -->
+        <section class="activities-section animate-up" style="animation-delay: 0.4s;">
+            <div style="text-align: center;">
+                <span class="section-badge">กิจกรรมตาม Mood</span>
+            </div>
+            <div class="activities-grid">
+                <div class="activity-card">
+                    <img src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Coffee and book" class="activity-image">
+                    <div class="activity-content">
+                        <p>จิบกาแฟอุ่นๆ พร้อมอ่านหนังสือเล่มโปรดในมุมส่วนตัว ปล่อยให้เวลาเดินช้าลงเพื่อชาร์จพลังและฟื้นฟูจิตใจของคุณ</p>
+                    </div>
+                </div>
+                <div class="activity-card">
+                    <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Art and craft" class="activity-image">
+                    <div class="activity-content">
+                        <p>ค้นหาแรงบันดาลใจผ่านงานศิลปะหรืองานคราฟต์ ปลดปล่อยจินตนาการและสนุกไปกับการสร้างสรรค์สิ่งใหม่ๆ</p>
+                    </div>
+                </div>
+                <div class="activity-card">
+                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Games and relax" class="activity-image">
+                    <div class="activity-content">
+                        <p>ผ่อนคลายสมองไปกับแอปเกมระบายสีหรือมินิเกมเบาๆ ช่วยลดความเครียดและเติมรอยยิ้มให้วันของคุณกลับมาสดใส</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <div class="logo-icon" style="background: var(--text-white); color: var(--burgundy);"><i class="fa-solid fa-wave-square"></i></div>
+                    MoodFlow
+                </div>
+                <p style="color: rgba(255,255,255,0.7); line-height: 1.6; margin-top: 1rem;">
+                    แพลตฟอร์มที่เชื่อมโยงอารมณ์ของคุณกับเสียงเพลงและกิจกรรมที่เหมาะสมที่สุด
+                </p>
+            </div>
+            <div class="footer-col">
+                <h4>รู้จักเรา</h4>
+                <ul>
+                    <li><a href="#">เกี่ยวกับ MoodFlow</a></li>
+                    <li><a href="#">ทีมงานของเรา</a></li>
+                    <li><a href="#">ข่าวสารและอัปเดต</a></li>
+                    <li><a href="#">ร่วมงานกับเรา</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>หมวดหมู่อารมณ์</h4>
+                <ul>
+                    <li><a href="#">อารมณ์ดี</a></li>
+                    <li><a href="#">ผ่อนคลาย</a></li>
+                    <li><a href="#">มีพลัง</a></li>
+                    <li><a href="#">คิดทบทวน</a></li>
+                    <li><a href="#">สร้างแรงบันดาลใจ</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>ติดต่อและช่วยเหลือ</h4>
+                <ul>
+                    <li><a href="#">คำถามที่พบบ่อย (FAQ)</a></li>
+                    <li><a href="#">แจ้งปัญหาการใช้งาน</a></li>
+                    <li><a href="#">support@moodflow.app</a></li>
+                    <li><a href="#">02-XXX-XXXX</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="legal-links">
+                <a href="#">นโยบายความเป็นส่วนตัว</a>
+                <a href="#">เงื่อนไขการใช้งาน</a>
+                <a href="#">นโยบายคุกกี้</a>
+                <a href="#">ข้อกำหนดและเงื่อนไข</a>
+            </div>
+            <div>
+                &copy; 2026 MoodFlow. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple animation trigger on load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("MoodFlow initialized.");
+        });
+    </script>
+<script src="auth.js"></script>
+</body>
+</html>
+
+

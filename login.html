@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - MoodFlow</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <div class="logo-icon"><i class="fa-solid fa-wave-square"></i></div>
+            MoodFlow
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">หน้าแรก</a></li>
+            <li><a href="mood.html">บันทึกอารมณ์</a></li>
+            <li><a href="library.html">คลังเพลง</a></li>
+            <li><a href="about.html">เกี่ยวกับเรา</a></li>
+        </ul>
+        <a href="login.html" class="btn-primary">เข้าสู่ระบบ</a>
+    </nav>
+
+    <div class="login-wrapper animate-up">
+        <div class="login-card">
+            <h2>เข้าสู่ระบบ</h2>
+            <p>ยินดีต้อนรับกลับสู่พื้นที่อารมณ์ศิลป์ของคุณ</p>
+            
+            <form>
+                <div class="form-group">
+                    <label for="username">อีเมล หรือ ชื่อผู้ใช้</label>
+                    <input type="text" id="username" class="form-control" placeholder="กรอกอีเมลของคุณ" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">รหัสผ่าน</label>
+                    <input type="password" id="password" class="form-control" placeholder="กรอกรหัสผ่านของคุณ" required>
+                </div>
+                <div style="text-align: right; margin-bottom: 1.5rem;">
+                    <a href="#" style="color: var(--text-dark); font-size: 0.9rem; text-decoration: none;">ลืมรหัสผ่านใช่ไหม?</a>
+                </div>
+                <button type="submit" class="btn-primary btn-block">เข้าสู่ระบบ</button>
+            </form>
+
+            <div class="login-links">
+                ยังไม่มีบัญชีผู้ใช้? <a href="#">สมัครสมาชิกที่นี่</a>
+            </div>
+            
+            <div style="margin-top: 2rem; position: relative;">
+                <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.1);">
+                <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--glass-bg); padding: 0 10px; font-size: 0.9rem; color: #666;">หรือเข้าสู่ระบบด้วย</span>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 1.5rem;">
+                <button id="btnGoogleLogin" class="form-control" style="background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 500; transition: all 0.3s; width: 100%;">
+                    <i class="fa-brands fa-google" style="color: #DB4437;"></i> ล็อกอินด้วย Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ฟังก์ชันจำลองการล็อกอิน (แบบไม่ใช้ฐานข้อมูล)
+        function simulateLogin(type) {
+            let userName = "ผู้ใช้งานทั่วไป";
+            
+            if (type === 'email') {
+                const email = document.getElementById('username').value;
+                if (!email) return;
+                userName = email; // ใช้ชื่ออีเมลที่กรอกมาทั้งหมด
+            } else if (type === 'google') {
+                // เปลี่ยนปุ่มเป็นสถานะกำลังโหลด
+                const btn = document.getElementById('btnGoogleLogin');
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังเชื่อมต่อ...';
+                userName = "ผู้ใช้งานจาก Google";
+            }
+            
+            // บันทึกสถานะการล็อกอินลงในเครื่อง (LocalStorage)
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userName', userName);
+            
+            // หน่วงเวลา 1 วินาทีให้ดูสมจริง แล้วพากลับไปหน้าหลัก
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+
+        // เมื่อกดปุ่มล็อกอินด้วย Google
+        document.getElementById('btnGoogleLogin').addEventListener('click', () => {
+            simulateLogin('google');
+        });
+        
+        // เมื่อกดปุ่มเข้าสู่ระบบ (จากฟอร์มปกติ)
+        document.querySelector('form').onsubmit = function(event) {
+            event.preventDefault();
+            simulateLogin('email');
+        };
+    </script>
+<script src="auth.js"></script>
+</body>
+</html>
+
+
